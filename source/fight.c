@@ -139,6 +139,35 @@ int main(int argc, char *argv[]){
 /* --------------------------------------------------------------------------------------------- */
 /* ========================================== FUNÇÕES ========================================== */
 /* --------------------------------------------------------------------------------------------- */
+void * juiz     (void * pid){
+  // while(TRUE)
+    // Pega mutex
+    // while (torneio_SIZE == 0) dorme
+    // Pega os 2 primeiros da pilha TORNEIO
+    // Atualiza indices (SIZE, read)
+    // Libera mutex
+
+    // Assiste luta
+    // Decide ganhador
+    // Informa ganhador - Atualiza Inscritos
+    
+    // Pega mutex
+    // Insere ganhador no final da pilha
+    // Atualiza indices (SIZE, write)
+    // Libera mutex
+}
+
+void * lutador  (void * pid){
+  // while(TRUE)
+    // Se inscreve no torneio, guarda endereço
+    // Se meu inscrito.status for FALSO -> morri
+    // Acorda o juiz
+    // Espera luta começar
+    // LUTA
+    // Espera resultado
+  // end while
+  // TODO: MORREU? VIRA TORCEDOR
+}
 /* Source: https://stackoverflow.com/questions/4770985/how-to-check-if-a-string-starts-with-another-string-in-c#answer-4770992 */
 bool prefix(const char *pre, const char *str){
   return strncmp(pre, str, strlen(pre)) == 0;
