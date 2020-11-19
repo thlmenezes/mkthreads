@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <unistd.h>
 
 
 /* --------------------------------------------------------------------------------------------- */
@@ -80,7 +81,7 @@ void print_man  (const char* nome, const char* description, int len, const char 
 int main(int argc, char *argv[]){
   int idx, LUTADORES = 2, JUIZES = 1, TORCEDORES = 1, EQUIPES = 2;
   int * ptr_int;
-  char input_char;
+  // char input_char;
   char * ptr_char;
   
   // Tratando os argumentos CLI
@@ -156,9 +157,13 @@ int main(int argc, char *argv[]){
 /* ========================================== FUNÇÕES ========================================== */
 /* --------------------------------------------------------------------------------------------- */
 void * juiz     (void * pid){
-  int esquerda, direita, ganhador;
+  int esquerda, direita, ganhador,
+  id = *((int *) pid);
 
   while(TRUE){
+
+    print("JUIZ %d chegou ao ringue",id);
+    
     pthread_mutex_lock(&mutex);
       // Enquanto não há pelo menos 2
       // lutadores cadastrados, juiz dorme
@@ -173,6 +178,8 @@ void * juiz     (void * pid){
       
       torneio_TAMANHO -= 2;
       // Atualizando indices (SIZE, read)
+      print("JUIZ %d: convocando lutadores %d e %d",
+                  id,             esquerda, direita);
     pthread_mutex_unlock(&mutex);
     
     // Assiste luta
@@ -185,6 +192,8 @@ void * juiz     (void * pid){
       INSCRITOS[ganhador == direita? esquerda : direita] = FALSE;
       // Insere ganhador no final da pilha
       TORNEIO[torneio_escrita_idx] = ganhador;
+      print("JUIZ %d: luta definida, ganhador %d ",
+                  id,                    ganhador);
       // Atualiza indices (SIZE, write)
       torneio_escrita_idx = (torneio_escrita_idx + 1) % LUTADORES;
       torneio_TAMANHO++;
@@ -204,6 +213,7 @@ void * lutador  (void * pid){
     // Espera resultado
   // end while
   // TODO: MORREU? VIRA TORCEDOR
+  pthread_exit(0);
 }
 /* Source: https://stackoverflow.com/questions/4770985/how-to-check-if-a-string-starts-with-another-string-in-c#answer-4770992 */
 bool prefix(const char *pre, const char *str){
