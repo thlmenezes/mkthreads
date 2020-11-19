@@ -37,22 +37,22 @@
 #define bool int
 #define print printf
 #define RESET_COLOR "\033[0m"
-typedef struct {
-  int id;
-  bool status;
-} inscrito;
 
 /* --------------------------------------------------------------------------------------------- */
 /* ========================================== THREADS ========================================== */
 /* ============================================= E ============================================= */
 /* ================================== VARIAVEIS COMPARTILHADAS ================================= */
 /* --------------------------------------------------------------------------------------------- */
-int * TORNEIO;// TORNEIO = (int *) calloc(LUTADORES+1,sizeof(char));
+int LUTADORES = 2, JUIZES = 1, TORCEDORES = 1, EQUIPES = 2;
+int * TORNEIO;// TORNEIO = (int *) calloc(LUTADORES,sizeof(int));
 int torneio_SIZE = 0;
 int torneio_read_index = 0;
 int torneio_write_index = 0;
-inscrito * INSCRITOS;
-
+bool * INSCRITOS; // INSCRITOS = (bool *) calloc(LUTADORES + 1,sizeof(bool));
+// LOCKS
+pthread_mutex_t mutex    = PTHREAD_MUTEX_INITIALIZER; // Controlador da região crítica
+// VARIÁVEIS CONDIÇÃO
+pthread_cond_t  juiz_cond = PTHREAD_COND_INITIALIZER; // Controla o fluxo dos produtores
 
 /* --------------------------------------------------------------------------------------------- */
 /* =========================================== HEADER ========================================== */
