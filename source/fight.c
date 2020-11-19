@@ -43,12 +43,15 @@
 /* ============================================= E ============================================= */
 /* ================================== VARIAVEIS COMPARTILHADAS ================================= */
 /* --------------------------------------------------------------------------------------------- */
+// Número de atores padrão
 int LUTADORES = 2, JUIZES = 1, TORCEDORES = 1, EQUIPES = 2;
-int * TORNEIO;// TORNEIO = (int *) calloc(LUTADORES,sizeof(int));
-int torneio_SIZE = 0;
-int torneio_read_index = 0;
-int torneio_write_index = 0;
-bool * INSCRITOS; // INSCRITOS = (bool *) calloc(LUTADORES + 1,sizeof(bool));
+// Array para controle do status dos inscritos
+bool * INSCRITOS;
+// Pilha Circular para percorrer o torneio por largura
+int * TORNEIO;
+int torneio_TAMANHO = 0;
+int torneio_leitura_idx = 0;
+int torneio_escrita_idx = 0;
 // LOCKS
 pthread_mutex_t mutex    = PTHREAD_MUTEX_INITIALIZER; // Controlador da região crítica
 // VARIÁVEIS CONDIÇÃO
@@ -72,40 +75,42 @@ void print_man  (const char* nome, const char* description, int len, const char 
 /* --------------------------------------------------------------------------------------------- */
 int main(int argc, char *argv[]){
   int idx, LUTADORES = 2, JUIZES = 1, TORCEDORES = 1, EQUIPES = 2;
-  int * value;
-  char input;
-  char * command;
+  int * ptr_int;
+  char input_char;
+  char * ptr_char;
   
-  for(idx = 1; idx < argc; idx++, value=NULL){
-    command = argv[idx];
+  // Tratando os argumentos CLI
 
-    if(prefix("l=",command))
-      value = &LUTADORES;
+  for(idx = 1; idx < argc; idx++, ptr_int=NULL){
+    ptr_char = argv[idx];
 
-    else if(prefix("j=",command))
-      value = &JUIZES;
+    if(prefix("l=",ptr_char))
+      ptr_int = &LUTADORES;
 
-    else if(prefix("t=",command))
-      value = &TORCEDORES;
+    else if(prefix("j=",ptr_char))
+      ptr_int = &JUIZES;
 
-    else if(prefix("e=",command))
-      value = &EQUIPES;
+    else if(prefix("t=",ptr_char))
+      ptr_int = &TORCEDORES;
 
-    else if(strcmp("--help",command) == 0 || strcmp("-H",command) == 0){
+    else if(prefix("e=",ptr_char))
+      ptr_int = &EQUIPES;
+
+    else if(strcmp("--help",ptr_char) == 0 || strcmp("-H",ptr_char) == 0){
       print_help();
       return 0;
     }
 
-    if(value != NULL)
-      *value = atoi(command+2*(sizeof(char)));
+    if(ptr_int != NULL)
+      *ptr_int = atoi(ptr_char+2*(sizeof(char)));
   }
 
-  // Verify if user wants to use default args
+  // Tratamento do caso de nenhum argumento CLI
   /*
   if (argc == 1){
-    print("Print Help ? [Y/n]\n");
-    scanf("%c", &input);
-    if(input != 'n' && input != 'N'){
+    print("Imprimir Ajuda ? [S/n]\n");
+    scanf("%c", &input_char);
+    if(input_char != 'n' && input_char != 'N'){
       print_help();
       return 0;
     }
@@ -113,22 +118,28 @@ int main(int argc, char *argv[]){
   }
   // */
 
+  // Inicializando array
+  TORNEIO   = (int  *) calloc(LUTADORES,sizeof(int));
+  INSCRITOS = (bool *) calloc(LUTADORES,sizeof(bool));
+  // Inicializa o array com true
+  memset(INSCRITOS,TRUE,LUTADORES);
+
   pthread_t tjid[JUIZES];
 
-  // Criacao das threads de juízes
+  // Criação das threads de juízes
   for (idx = 0; idx < JUIZES; idx++) {
-      value = (int *) malloc(sizeof(int));
-      *value = idx;
-      pthread_create(&tjid[idx], NULL, juiz, (void*) (value));
+      ptr_int = (int *) malloc(sizeof(int));
+      *ptr_int = idx;
+      pthread_create(&tjid[idx], NULL, juiz, (void*) (ptr_int));
   }
 
   pthread_t tlid[LUTADORES];
 
-  // Criacao das threads de lutadores
+  // Criação das threads de lutadores
   for (idx = 0; idx < LUTADORES; idx++) {
-      value = (int *) malloc(sizeof(int));
-      *value = idx;
-      pthread_create(&tlid[idx], NULL, lutador, (void*) (value));
+      ptr_int = (int *) malloc(sizeof(int));
+      *ptr_int = idx;
+      pthread_create(&tlid[idx], NULL, lutador, (void*) (ptr_int));
   }
 
   pthread_join(tjid[0],NULL);
@@ -146,16 +157,16 @@ void * juiz     (void * pid){
   while(TRUE){
     pthread_mutex_lock(&mutex);
       // Enquanto não há pelo menos 2 lutadores cadastrados
-      while( torneio_SIZE < 2 )
+      while( torneio_TAMANHO < 2 )
         pthread_cond_wait(&juiz_cond,&mutex); // juiz dorme
       // Pega os 2 primeiros da pilha TORNEIO
-      red  = TORNEIO[torneio_read_index];
-      torneio_read_index = (torneio_read_index + 1) % LUTADORES;
+      red  = TORNEIO[torneio_leitura_idx];
+      torneio_leitura_idx = (torneio_leitura_idx + 1) % LUTADORES;
 
-      blue = TORNEIO[torneio_read_index];
-      torneio_read_index = (torneio_read_index + 1) % LUTADORES;
+      blue = TORNEIO[torneio_leitura_idx];
+      torneio_leitura_idx = (torneio_leitura_idx + 1) % LUTADORES;
       
-      torneio_SIZE -= 2;
+      torneio_TAMANHO -= 2;
       // Atualizando indices (SIZE, read)
     pthread_mutex_unlock(&mutex);
     
@@ -168,10 +179,10 @@ void * juiz     (void * pid){
       // Informa perdedor - Atualiza Inscritos
       INSCRITOS[winner == blue? red : blue] = FALSE;
       // Insere ganhador no final da pilha
-      TORNEIO[torneio_write_index] = winner;
+      TORNEIO[torneio_escrita_idx] = winner;
       // Atualiza indices (SIZE, write)
-      torneio_write_index = (torneio_write_index + 1) % LUTADORES;
-      torneio_SIZE++;
+      torneio_escrita_idx = (torneio_escrita_idx + 1) % LUTADORES;
+      torneio_TAMANHO++;
     pthread_mutex_unlock(&mutex);
   }
 
