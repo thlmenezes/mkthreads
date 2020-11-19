@@ -55,9 +55,11 @@ int torneio_TAMANHO = 0;
 int torneio_leitura_idx = 0;
 int torneio_escrita_idx = 0;
 // LOCKS
-pthread_mutex_t mutex    = PTHREAD_MUTEX_INITIALIZER; // Controlador da região crítica
+// Controlador da região crítica
+pthread_mutex_t mutex    = PTHREAD_MUTEX_INITIALIZER;
 // VARIÁVEIS CONDIÇÃO
-pthread_cond_t  juiz_cond = PTHREAD_COND_INITIALIZER; // Controla o fluxo dos produtores
+// Controla o fluxo dos produtores
+pthread_cond_t  juiz_cond = PTHREAD_COND_INITIALIZER;
 
 /* --------------------------------------------------------------------------------------------- */
 /* =========================================== HEADER ========================================== */
@@ -154,18 +156,19 @@ int main(int argc, char *argv[]){
 /* ========================================== FUNÇÕES ========================================== */
 /* --------------------------------------------------------------------------------------------- */
 void * juiz     (void * pid){
-  int red, blue, winner;
+  int esquerda, direita, ganhador;
 
   while(TRUE){
     pthread_mutex_lock(&mutex);
-      // Enquanto não há pelo menos 2 lutadores cadastrados
+      // Enquanto não há pelo menos 2
+      // lutadores cadastrados, juiz dorme
       while( torneio_TAMANHO < 2 )
-        pthread_cond_wait(&juiz_cond,&mutex); // juiz dorme
+        pthread_cond_wait(&juiz_cond,&mutex);
       // Pega os 2 primeiros da pilha TORNEIO
-      red  = TORNEIO[torneio_leitura_idx];
+      esquerda  = TORNEIO[torneio_leitura_idx];
       torneio_leitura_idx = (torneio_leitura_idx + 1) % LUTADORES;
 
-      blue = TORNEIO[torneio_leitura_idx];
+      direita = TORNEIO[torneio_leitura_idx];
       torneio_leitura_idx = (torneio_leitura_idx + 1) % LUTADORES;
       
       torneio_TAMANHO -= 2;
@@ -175,13 +178,13 @@ void * juiz     (void * pid){
     // Assiste luta
     sleep(5);
     // Decide ganhador
-    winner = (red+blue) % 2 ? red : blue;
+    ganhador = (esquerda+direita) % 2 ? esquerda : direita;
     
     pthread_mutex_lock(&mutex);
       // Informa perdedor - Atualiza Inscritos
-      INSCRITOS[winner == blue? red : blue] = FALSE;
+      INSCRITOS[ganhador == direita? esquerda : direita] = FALSE;
       // Insere ganhador no final da pilha
-      TORNEIO[torneio_escrita_idx] = winner;
+      TORNEIO[torneio_escrita_idx] = ganhador;
       // Atualiza indices (SIZE, write)
       torneio_escrita_idx = (torneio_escrita_idx + 1) % LUTADORES;
       torneio_TAMANHO++;
