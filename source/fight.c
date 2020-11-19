@@ -141,21 +141,41 @@ int main(int argc, char *argv[]){
 /* ========================================== FUNÇÕES ========================================== */
 /* --------------------------------------------------------------------------------------------- */
 void * juiz     (void * pid){
-  // while(TRUE)
-    // Pega mutex
-    // while (torneio_SIZE == 0) dorme
-    // Pega os 2 primeiros da pilha TORNEIO
-    // Atualiza indices (SIZE, read)
-    // Libera mutex
+  int red, blue, winner;
 
-    // Assiste luta
-    // Decide ganhador
-    // Informa ganhador - Atualiza Inscritos
+  while(TRUE){
+    pthread_mutex_lock(&mutex);
+      // Enquanto não há pelo menos 2 lutadores cadastrados
+      while( torneio_SIZE < 2 )
+        pthread_cond_wait(&juiz_cond,&mutex); // juiz dorme
+      // Pega os 2 primeiros da pilha TORNEIO
+      red  = TORNEIO[torneio_read_index];
+      torneio_read_index = (torneio_read_index + 1) % LUTADORES;
+
+      blue = TORNEIO[torneio_read_index];
+      torneio_read_index = (torneio_read_index + 1) % LUTADORES;
+      
+      torneio_SIZE -= 2;
+      // Atualizando indices (SIZE, read)
+    pthread_mutex_unlock(&mutex);
     
-    // Pega mutex
-    // Insere ganhador no final da pilha
-    // Atualiza indices (SIZE, write)
-    // Libera mutex
+    // Assiste luta
+    sleep(5);
+    // Decide ganhador
+    winner = (red+blue) % 2 ? red : blue;
+    
+    pthread_mutex_lock(&mutex);
+      // Informa perdedor - Atualiza Inscritos
+      INSCRITOS[winner == blue? red : blue] = FALSE;
+      // Insere ganhador no final da pilha
+      TORNEIO[torneio_write_index] = winner;
+      // Atualiza indices (SIZE, write)
+      torneio_write_index = (torneio_write_index + 1) % LUTADORES;
+      torneio_SIZE++;
+    pthread_mutex_unlock(&mutex);
+  }
+
+  pthread_exit(0);
 }
 
 void * lutador  (void * pid){
