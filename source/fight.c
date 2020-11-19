@@ -47,6 +47,10 @@ typedef struct {
 /* ================================== VARIAVEIS COMPARTILHADAS ================================= */
 /* --------------------------------------------------------------------------------------------- */
 int * TORNEIO;// TORNEIO = (int *) calloc(LUTADORES+1,sizeof(char));
+int torneio_SIZE = 0;
+int torneio_read_index = 0;
+int torneio_write_index = 0;
+inscrito * INSCRITOS;
 
 
 /* --------------------------------------------------------------------------------------------- */
