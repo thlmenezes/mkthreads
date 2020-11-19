@@ -28,6 +28,7 @@
 #include <string.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <semaphore.h>
 
 
 /* --------------------------------------------------------------------------------------------- */
@@ -65,6 +66,9 @@ pthread_mutex_t mutex    = PTHREAD_MUTEX_INITIALIZER;
 // VARIÁVEIS CONDIÇÃO
 // Controla o fluxo dos juizes
 pthread_cond_t  juiz_cond = PTHREAD_COND_INITIALIZER;
+// SEMAPHORES
+// Controla os lutadores, aguardam o fim de suas lutas
+sem_t * LUTANDO;
 
 /* --------------------------------------------------------------------------------------------- */
 /* =========================================== HEADER ========================================== */
@@ -127,13 +131,18 @@ int main(int argc, char *argv[]){
   }
   // */
 
+  // O número de vivos no começo é o número de lutadores
+  VIVOS = LUTADORES;
+
   // Inicializando arrays
   TORNEIO   = (int  *) calloc(LUTADORES,sizeof(int));
   INSCRITOS = (bool *) calloc(LUTADORES,sizeof(bool));
-  // O número de vivos no começo é o número de lutadores
-  VIVOS = LUTADORES;
+  LUTANDO  = (sem_t *) calloc(LUTADORES,sizeof(sem_t));
   // Inicializa o array com true
-  memset(INSCRITOS,TRUE,LUTADORES);
+  memset(INSCRITOS,TRUE,LUTADORES);  
+  // Inicializando semáforos
+  for (idx = 0; idx < LUTADORES; idx++)
+    sem_init(&LUTANDO[idx], 0, FALSE);
 
   pthread_t tjid[JUIZES];
 
@@ -213,14 +222,23 @@ void * juiz     (void * pid){
 }
 
 void * lutador  (void * pid){
-  // while(TRUE)
-    // Se inscreve no torneio, guarda endereço
+  int id = *((int *) pid);
+  
+  while(TRUE){
+    pthread_mutex_lock(&mutex);
+      // Se inscreve no torneio
+      TORNEIO[torneio_escrita_idx] = id;
+      INCREMENTA(torneio_escrita_idx);
+      // Acorda o juiz
+      pthread_cond_signal(&juiz_cond);
+    pthread_mutex_unlock(&mutex);
+
+    // Aguarda o resultado da luta
+    sem_wait(&LUTANDO[id]);
     // Se meu inscrito.status for FALSO -> morri
-    // Acorda o juiz
-    // Espera luta começar
-    // LUTA
-    // Espera resultado
-  // end while
+    if(!INSCRITOS[id])
+      break;
+  }
   // TODO: MORREU? VIRA TORCEDOR
   pthread_exit(0);
 }
