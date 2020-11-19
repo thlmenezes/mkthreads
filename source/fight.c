@@ -50,6 +50,8 @@ int * TORNEIO;// TORNEIO = (int *) calloc(LUTADORES+1,sizeof(char));
 /* =========================================== HEADER ========================================== */
 /* --------------------------------------------------------------------------------------------- */
 // Atores
+void * juiz     (void * pid);
+void * lutador  (void * pid);
 // Ações
 // std++
 bool prefix     (const char *pre, const char *str);
@@ -102,6 +104,26 @@ int main(int argc, char *argv[]){
     print("Loading defaults\n");
   }
   // */
+
+  pthread_t tjid[JUIZES];
+
+  // Criacao das threads de juízes
+  for (idx = 0; idx < JUIZES; idx++) {
+      value = (int *) malloc(sizeof(int));
+      *value = idx;
+      pthread_create(&tjid[idx], NULL, juiz, (void*) (value));
+  }
+
+  pthread_t tlid[LUTADORES];
+
+  // Criacao das threads de lutadores
+  for (idx = 0; idx < LUTADORES; idx++) {
+      value = (int *) malloc(sizeof(int));
+      *value = idx;
+      pthread_create(&tlid[idx], NULL, lutador, (void*) (value));
+  }
+
+  pthread_join(tjid[0],NULL);
 
   return 0;
 }
