@@ -63,7 +63,7 @@ int torneio_escrita_idx = 0;
 // Controlador da região crítica
 pthread_mutex_t mutex    = PTHREAD_MUTEX_INITIALIZER;
 // VARIÁVEIS CONDIÇÃO
-// Controla o fluxo dos produtores
+// Controla o fluxo dos juizes
 pthread_cond_t  juiz_cond = PTHREAD_COND_INITIALIZER;
 
 /* --------------------------------------------------------------------------------------------- */
