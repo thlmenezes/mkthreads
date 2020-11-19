@@ -225,14 +225,8 @@ void * lutador  (void * pid){
   int id = *((int *) pid);
   
   while(TRUE){
-    pthread_mutex_lock(&mutex);
-      // Se inscreve no torneio
-      TORNEIO[torneio_escrita_idx] = id;
-      INCREMENTA(torneio_escrita_idx);
-      // Acorda o juiz
-      pthread_cond_signal(&juiz_cond);
-    pthread_mutex_unlock(&mutex);
-
+    // Acorda o juiz
+    pthread_cond_signal(&juiz_cond);
     // Aguarda o resultado da luta
     sem_wait(&LUTANDO[id]);
     // Se meu inscrito.status for FALSO -> morri
