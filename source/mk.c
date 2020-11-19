@@ -1,7 +1,7 @@
 /**
  * @date 18 NOV 2020
  * @author Thales Menezes @thlmenezes 17/0045919
- * Observação: Argumentos CLI -> ./fight --help
+ * Observação: Argumentos CLI -> ./mk --help
  * 
  * Objetivo: Simular um torneio de luta
  * 
@@ -272,7 +272,7 @@ void print_help() {
 \t* - Todos os torcedores podem assistir a final do torneio;\n\
 \t* - Lutadores quando perdem viram torcedores, mas só se interessam por partidas da sua equipe;\n\
 ";
-  print_man("./fight",description,10,options);
+  print_man("./mk",description,10,options);
 }
 
 void print_man(const char* nome, const char* description, int len, const char ** options){
