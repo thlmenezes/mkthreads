@@ -156,14 +156,14 @@ int main(int argc, char *argv[]){
       }
   }
 
-  // pthread_t tlid[LUTADORES];
+  pthread_t tlid[LUTADORES];
 
-  // // Criação das threads de lutadores
-  // for (idx = 0; idx < LUTADORES; idx++) {
-  //     ptr_int = (int *) malloc(sizeof(int));
-  //     *ptr_int = idx;
-  //     pthread_create(&tlid[idx], NULL, lutador, (void*) (ptr_int));
-  // }
+  // Criação das threads de lutadores
+  for (idx = 0; idx < LUTADORES; idx++) {
+      ptr_int = (int *) malloc(sizeof(int));
+      *ptr_int = idx;
+      pthread_create(&tlid[idx], NULL, lutador, (void*) (ptr_int));
+  }
 
   pthread_join(tjid[0],NULL);
 
