@@ -40,6 +40,8 @@
 // Preferência Pessoal
 #define print printf
 #define RESET_COLOR "\033[0m"
+// Incrementa índice pilha
+#define INCREMENTA(idx) idx = (idx + 1) % VIVOS;
 
 /* --------------------------------------------------------------------------------------------- */
 /* ========================================== THREADS ========================================== */
@@ -50,6 +52,8 @@
 int LUTADORES = 2, JUIZES = 1, TORCEDORES = 1, EQUIPES = 2;
 // Array para controle do status dos inscritos
 bool * INSCRITOS;
+// Número de inscritos que continuam no torneio
+int VIVOS;
 // Pilha Circular para percorrer o torneio por largura
 int * TORNEIO;
 int torneio_TAMANHO = 0;
@@ -123,9 +127,11 @@ int main(int argc, char *argv[]){
   }
   // */
 
-  // Inicializando array
+  // Inicializando arrays
   TORNEIO   = (int  *) calloc(LUTADORES,sizeof(int));
   INSCRITOS = (bool *) calloc(LUTADORES,sizeof(bool));
+  // O número de vivos no começo é o número de lutadores
+  VIVOS = LUTADORES;
   // Inicializa o array com true
   memset(INSCRITOS,TRUE,LUTADORES);
 
@@ -166,7 +172,7 @@ void * juiz     (void * pid){
   while(TRUE){
 
     print("JUIZ %d chegou ao ringue",id);
-    
+
     pthread_mutex_lock(&mutex);
       // Enquanto não há pelo menos 2
       // lutadores cadastrados, juiz dorme
@@ -174,11 +180,11 @@ void * juiz     (void * pid){
         pthread_cond_wait(&juiz_cond,&mutex);
       // Pega os 2 primeiros da pilha TORNEIO
       esquerda  = TORNEIO[torneio_leitura_idx];
-      torneio_leitura_idx = (torneio_leitura_idx + 1) % LUTADORES;
+      INCREMENTA(torneio_leitura_idx);
 
       direita = TORNEIO[torneio_leitura_idx];
-      torneio_leitura_idx = (torneio_leitura_idx + 1) % LUTADORES;
-      
+      INCREMENTA(torneio_leitura_idx);
+
       torneio_TAMANHO -= 2;
       // Atualizando indices (SIZE, read)
       print("JUIZ %d: convocando lutadores %d e %d",
@@ -198,7 +204,7 @@ void * juiz     (void * pid){
       print("JUIZ %d: luta definida, ganhador %d ",
                   id,                    ganhador);
       // Atualiza indices (SIZE, write)
-      torneio_escrita_idx = (torneio_escrita_idx + 1) % LUTADORES;
+      INCREMENTA(torneio_escrita_idx);
       torneio_TAMANHO++;
     pthread_mutex_unlock(&mutex);
   }
