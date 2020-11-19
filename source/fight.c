@@ -7,13 +7,14 @@
  * 
  * Comportamento desejado:
  * - [fail] Cada ringue tem um juiz;
- * - [fail] Lutadores são divididos em equipes;
- * - [fail] Cada luta só pode acontecer com na presença de um juiz;
  * - [fail] Um juiz só pode assistir uma luta por vez;
+ * - [fail] Cada luta só pode acontecer com na presença de um juiz;
  * - [fail] Mais de uma luta pode acontecer ao mesmo tempo;
  * - [fail] Torcedores buscam assistir lutadores;
- * - [fail] Há um limite de torcedores por luta e dependendo da fase do torneio;
+ * - [fail] Há um limite de torcedores por luta classificatória;
  * - [fail] Caso um torcedor não consiga ingresso para assistir uma luta, espera na praça de alimentação;
+ * - [fail] Todos os torcedores podem assistir a final do torneio;
+ * - [fail] Lutadores são divididos em equipes;
  * - [fail] Lutadores quando perdem viram torcedores, mas só se interessam por partidas da sua equipe;
  * 
  * Garantias iniciais:
