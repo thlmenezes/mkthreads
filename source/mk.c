@@ -63,9 +63,6 @@ int torneio_escrita_idx = 0;
 // LOCKS
 // Controlador da região crítica
 pthread_mutex_t mutex    = PTHREAD_MUTEX_INITIALIZER;
-// VARIÁVEIS CONDIÇÃO
-// Controla o fluxo dos juizes
-pthread_cond_t  juiz_cond = PTHREAD_COND_INITIALIZER;
 // SEMAPHORES
 // Controla os lutadores, aguardam o fim de suas lutas
 sem_t * LUTANDO;
@@ -138,15 +135,22 @@ int main(int argc, char *argv[]){
   TORNEIO   = (int  *) calloc(LUTADORES,sizeof(int));
   INSCRITOS = (bool *) calloc(LUTADORES,sizeof(bool));
   LUTANDO  = (sem_t *) calloc(LUTADORES,sizeof(sem_t));
+  
   // Inicializa o array com true
-  memset(INSCRITOS,TRUE,LUTADORES);  
+  memset(INSCRITOS,TRUE,LUTADORES);
+  
+  // Inicializa torneio com lutadores
+  for (idx = 0; idx < LUTADORES; idx++)
+      TORNEIO[idx] = idx;
+  torneio_TAMANHO = LUTADORES;
+  
   // Inicializando semáforos
   for (idx = 0; idx < LUTADORES; idx++)
     sem_init(&LUTANDO[idx], 0, FALSE);
 
+  // Criação das threads de juízes
   pthread_t tjid[JUIZES];
 
-  // Criação das threads de juízes
   for (idx = 0; idx < JUIZES; idx++) {
       ptr_int = (int *) malloc(sizeof(int));
       *ptr_int = idx;
@@ -156,9 +160,9 @@ int main(int argc, char *argv[]){
       }
   }
 
+  // Criação das threads de lutadores
   pthread_t tlid[LUTADORES];
 
-  // Criação das threads de lutadores
   for (idx = 0; idx < LUTADORES; idx++) {
       ptr_int = (int *) malloc(sizeof(int));
       *ptr_int = idx;
@@ -180,13 +184,12 @@ void * juiz     (void * pid){
 
   while(TRUE){
 
-    print("JUIZ %d chegou ao ringue",id);
+    print("JUIZ %d chegou ao ringue\n",id);
 
     pthread_mutex_lock(&mutex);
-      // Enquanto não há pelo menos 2
-      // lutadores cadastrados, juiz dorme
-      while( torneio_TAMANHO < 2 )
-        pthread_cond_wait(&juiz_cond,&mutex);
+      // Se tem menos de 2, torneio acabou
+      if( torneio_TAMANHO < 2 )
+        break;
       // Pega os 2 primeiros da pilha TORNEIO
       esquerda  = TORNEIO[torneio_leitura_idx];
       INCREMENTA(torneio_leitura_idx);
@@ -225,13 +228,12 @@ void * lutador  (void * pid){
   int id = *((int *) pid);
   
   while(TRUE){
-    // Acorda o juiz
-    pthread_cond_signal(&juiz_cond);
     // Aguarda o resultado da luta
     sem_wait(&LUTANDO[id]);
     // Se meu inscrito.status for FALSO -> morri
     if(!INSCRITOS[id])
       break;
+    print("Lutador %d: vivo para lutar mais um dia");
   }
   // TODO: MORREU? VIRA TORCEDOR
   pthread_exit(0);
