@@ -199,7 +199,7 @@ void * juiz     (void * pid){
 
       torneio_TAMANHO -= 2;
       // Atualizando indices (SIZE, read)
-      print("JUIZ %d: convocando lutadores %d e %d",
+      print("JUIZ %d: convocando lutadores %d e %d\n",
                   id,             esquerda, direita);
     pthread_mutex_unlock(&mutex);
     
@@ -213,14 +213,14 @@ void * juiz     (void * pid){
       INSCRITOS[ganhador == direita? esquerda : direita] = FALSE;
       // Insere ganhador no final da pilha
       TORNEIO[torneio_escrita_idx] = ganhador;
-      print("JUIZ %d: luta definida, ganhador %d ",
+      print("JUIZ %d: luta definida, ganhador %d\n",
                   id,                    ganhador);
       // Atualiza indices (SIZE, write)
       INCREMENTA(torneio_escrita_idx);
       torneio_TAMANHO++;
     pthread_mutex_unlock(&mutex);
   }
-
+  print("JUIZ %d: encerrei o expediente\n", id);
   pthread_exit(0);
 }
 
