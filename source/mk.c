@@ -206,7 +206,7 @@ void * juiz     (void * pid){
     pthread_mutex_unlock(&mutex);
     
     // Assiste luta
-    sleep(5);
+    sleep(3);
     // Decide ganhador
     ganhador = (esquerda+direita) % 2 ? esquerda : direita;
     
