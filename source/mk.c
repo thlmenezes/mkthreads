@@ -65,6 +65,7 @@ int torneio_escrita_idx = 0;
 pthread_mutex_t mutex    = PTHREAD_MUTEX_INITIALIZER;
 // SEMAPHORES
 // Controla os lutadores, aguardam o fim de suas lutas
+sem_t sem_vivos;
 sem_t * LUTANDO;
 
 /* --------------------------------------------------------------------------------------------- */
@@ -147,6 +148,7 @@ int main(int argc, char *argv[]){
   // Inicializando semáforos
   for (idx = 0; idx < LUTADORES; idx++)
     sem_init(&LUTANDO[idx], 0, FALSE);
+  sem_init(&sem_vivos, 0, FALSE);
 
   // Criação das threads de juízes
   pthread_t tjid[JUIZES];
@@ -170,7 +172,7 @@ int main(int argc, char *argv[]){
   }
 
   pthread_join(tjid[0],NULL);
-
+  sem_wait(&sem_vivos);
   return 0;
 }
 
@@ -228,14 +230,21 @@ void * juiz     (void * pid){
 
 void * lutador  (void * pid){
   int id = *((int *) pid);
-  
+
   while(TRUE){
     // Aguarda o resultado da luta
     sem_wait(&LUTANDO[id]);
     // Se meu inscrito.status for FALSO -> morri
-    if(!INSCRITOS[id])
+    if(!INSCRITOS[id]){
+      pthread_mutex_lock(&mutex);
+        VIVOS -= 1;
+        if( VIVOS == 0 )
+          sem_post(&sem_vivos);
+        else
+          print("Lutador %d morreu", id);
+      pthread_mutex_unlock(&mutex);
       break;
-    print("Lutador %d: vivo para lutar mais um dia");
+    }
   }
   // TODO: MORREU? VIRA TORCEDOR
   pthread_exit(0);
