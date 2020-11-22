@@ -312,7 +312,7 @@ void * torcedor (void * pid){
   }
   // Sem vaga? Praça de alimentação e Saída
   if(!sentou){
-    print("TORCEDOR %d: Praça de alimentação", id);
+    print("TORCEDOR %d: Praça de alimentação\n", id);
     sleep(5);
     pthread_exit(0);
   }
@@ -324,7 +324,7 @@ void * torcedor (void * pid){
       estado = VIVOS;
       while( VIVOS == estado )
         pthread_cond_wait(&torce_cond,&mutex);
-      print("%d OLÉ", id);
+      print("%d OLÉ\n", id);
     pthread_mutex_unlock(&mutex);
   }
 }
