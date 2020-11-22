@@ -171,7 +171,6 @@ int main(int argc, char *argv[]){
       pthread_create(&tlid[idx], NULL, lutador, (void*) (ptr_int));
   }
 
-  pthread_join(tjid[0],NULL);
   sem_wait(&sem_vivos);
   return 0;
 }
