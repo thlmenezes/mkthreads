@@ -226,6 +226,15 @@ void * juiz     (void * pid){
         pthread_cond_wait(&juiz_cond,&mutex);
 
       direita = TORNEIO[direita].id;
+
+      // Valida lutadores usando status
+      // Lutadores mortos?
+      if(!INSCRITOS[esquerda].vida || !INSCRITOS[direita].vida)
+        break;
+      // Luta já aconteceu?
+      if(INSCRITOS[esquerda].round > round || INSCRITOS[direita].round > round)
+        break;
+
       print("JUIZ %d: convocando lutadores %d e %d\n",
                   id,             esquerda, direita);
     pthread_mutex_unlock(&mutex);
