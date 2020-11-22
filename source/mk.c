@@ -55,7 +55,7 @@ typedef struct {
 /* ================================== VARIAVEIS COMPARTILHADAS ================================= */
 /* --------------------------------------------------------------------------------------------- */
 // Número de atores padrão
-int LUTADORES = 4, JUIZES = 2, TORCEDORES = 3, CADEIRAS = 20;
+int LUTADORES = 4, JUIZES = 2, TORCEDORES = 3, CADEIRAS = 2;
 // Array para controle do status dos inscritos
 status * INSCRITOS;
 // Número de inscritos que continuam no torneio
