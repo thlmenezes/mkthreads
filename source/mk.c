@@ -381,7 +381,7 @@ void print_help() {
   "Número de cadeiras do estádio"};
   const char * description = "\n\
   \t\033[1;32mTorneio de Artes Marciais Mistas, Mágicas e Tecnológicas\033[0m\n\
-  \t\t\t\033[1;32mMortal Kombat\033[0m\n\
+  \t\t\t\033[1;32mKortal Mombat\033[0m\n\
   \t* Regras:\n\
   \t* - Cada ringue tem um juiz;\n\
   \t* - O juiz irá convocar lutadores para lutar;\n\
