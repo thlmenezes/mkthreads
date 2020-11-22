@@ -97,35 +97,57 @@ void print_man  (const char* nome, const char* description, int len, const char 
 /* ============================================ MAIN =========================================== */
 /* --------------------------------------------------------------------------------------------- */
 int main(int argc, char *argv[]){
+  bool next_int = FALSE;
   int idx;
-  int * ptr_int;
+  int * ptr_int = NULL;
   char input_char;
   char * ptr_char;
   
   // Tratando os argumentos CLI
 
-  for(idx = 1; idx < argc; idx++, ptr_int=NULL){
+  for(idx = 1; idx < argc; idx++){
     ptr_char = argv[idx];
 
-    if(prefix("--lutadores=",ptr_char))
+    if(next_int){
+      next_int = FALSE;
+      // Valida input se é número inteiro
+      if(!valida_int(ptr_char)){
+        print("Input Inválido %s\n", ptr_char);
+        return 0;
+      }
+      *ptr_int = atoi(ptr_char);
+      continue;
+    }
+
+    if(prefix("--lutadores=",ptr_char)       || prefix("-L",ptr_char))
       ptr_int = &LUTADORES;
 
-    else if(prefix("--juizes=",ptr_char))
+    else if(prefix("--juizes=",ptr_char)     || prefix("-J",ptr_char))
       ptr_int = &JUIZES;
 
-    else if(prefix("--torcedores=",ptr_char))
+    else if(prefix("--torcedores=",ptr_char) || prefix("-T",ptr_char))
       ptr_int = &TORCEDORES;
 
-    else if(prefix("--cadeiras=",ptr_char))
+    else if(prefix("--cadeiras=",ptr_char)   || prefix("-C",ptr_char))
       ptr_int = &CADEIRAS;
 
-    else if(strcmp("--help",ptr_char) == 0 || strcmp("-H",ptr_char) == 0){
+    else if(strcmp("--help",ptr_char) == 0   || strcmp("-H",ptr_char) == 0){
       print_help();
       return 0;
     }
 
-    if(ptr_int != NULL)
-      *ptr_int = atoi(ptr_char+2*(sizeof(char)));
+    if(ptr_int != NULL && prefix("--", ptr_char)){
+      ptr_char = strchr(ptr_char, '=') + 1*(sizeof(char));
+      // Valida input se é número inteiro
+      if(!valida_int(ptr_char)){
+        print("Input Inválido %s\n", ptr_char);
+        return 0;
+      }
+      *ptr_int = atoi(ptr_char);
+      ptr_int = NULL;
+    }else if(prefix("-", ptr_char)){
+      next_int = TRUE;
+    }
   }
 
   // Tratamento do caso de nenhum argumento CLI
