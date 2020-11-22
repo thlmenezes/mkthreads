@@ -207,6 +207,10 @@ void * juiz     (void * pid){
         sem_post(&sem_vivos);
         break;
       }
+
+      while (torneio_TAMANHO < 2)
+        pthread_cond_wait(&juiz_cond,&mutex);
+
       // Pega o primeiro da pilha TORNEIO
       esquerda = TORNEIO[torneio_leitura_idx].id;
       round = TORNEIO[torneio_leitura_idx].round;
