@@ -77,7 +77,6 @@ pthread_cond_t  juiz_cond = PTHREAD_COND_INITIALIZER;
 // Controla os lutadores, aguardam o fim de suas lutas
 sem_t sem_vivos;
 sem_t * LUTANDO;
-sem_t * RINGUES;
 
 /* --------------------------------------------------------------------------------------------- */
 /* =========================================== HEADER ========================================== */
@@ -147,7 +146,6 @@ int main(int argc, char *argv[]){
   TORNEIO   =  (fight *) calloc(LUTADORES,sizeof(fight));
   INSCRITOS = (status *) calloc(LUTADORES,sizeof(status));
   LUTANDO   =  (sem_t *) calloc(LUTADORES,sizeof(sem_t));
-  RINGUES   =  (sem_t *) calloc(LUTADORES,sizeof(sem_t));
 
   for (idx = 0; idx < LUTADORES; idx++){
   // Inicializa o array com vida=true,round=0
@@ -158,7 +156,6 @@ int main(int argc, char *argv[]){
     TORNEIO[idx].round = 0;
   // Inicializando semáforos
     sem_init(&LUTANDO[idx], 0, FALSE);
-    sem_init(&RINGUES[idx], 0, TRUE);
   }
 
   torneio_TAMANHO = LUTADORES;
