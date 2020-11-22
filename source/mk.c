@@ -87,6 +87,7 @@ void * lutador  (void * pid);
 void * torcedor (void * pid);
 // Ações
 // std++
+bool valida_int (const char *str);
 bool prefix     (const char *pre, const char *str);
 void print_help ();
 void print_man  (const char* nome, const char* description, int len, const char ** options);
@@ -328,6 +329,16 @@ void * torcedor (void * pid){
       print("OLÉ %d\n", id);
     pthread_mutex_unlock(&mutex);
   }
+}
+
+bool valida_int (const char *str){
+  int idx;
+  for(idx = 0; idx < strlen(str); idx++){
+    if(str[idx] < '0' || str[idx] > '9'){
+      return FALSE;
+    }
+  }
+  return TRUE;
 }
 
 /* Source: https://stackoverflow.com/questions/4770985/how-to-check-if-a-string-starts-with-another-string-in-c#answer-4770992 */
