@@ -77,6 +77,7 @@ pthread_cond_t  juiz_cond = PTHREAD_COND_INITIALIZER;
 // Controla os lutadores, aguardam o fim de suas lutas
 sem_t sem_vivos;
 sem_t * LUTANDO;
+sem_t * RINGUES;
 
 /* --------------------------------------------------------------------------------------------- */
 /* =========================================== HEADER ========================================== */
