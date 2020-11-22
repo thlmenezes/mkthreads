@@ -371,7 +371,7 @@ void print_man(const char* nome, const char* description, int len, const char **
     print("\t%s%s",RESET_COLOR, description);
 
   print("\033[1;32mOPTIONS\n");
-  for(idx = 0; idx < len; idx++){
+  for(idx = 0; idx < len-2; idx++){
     print("\t%s", !(idx % 2) ? "" : "\t");
     print("%s", !(idx % 2) ? cyan : RESET_COLOR);
     print("%s\n",options[idx]);
