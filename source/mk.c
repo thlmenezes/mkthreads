@@ -152,9 +152,9 @@ int main(int argc, char *argv[]){
 
   // Tratamento do caso de nenhum argumento CLI
   if (argc == 1){
-    print("Imprimir Ajuda ? [S/n]\n");
+    print("Imprimir Ajuda ? [s/N]\n");
     scanf("%c", &input_char);
-    if(input_char != 'n' && input_char != 'N'){
+    if(input_char != 's' && input_char != 'S'){
       print_help();
       return 0;
     }
