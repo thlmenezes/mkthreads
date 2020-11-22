@@ -324,7 +324,7 @@ void * torcedor (void * pid){
       estado = VIVOS;
       while( VIVOS == estado )
         pthread_cond_wait(&torce_cond,&mutex);
-      print("%d OLÉ\n", id);
+      print("OLÉ %d\n", id);
     pthread_mutex_unlock(&mutex);
   }
 }
