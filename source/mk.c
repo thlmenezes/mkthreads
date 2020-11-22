@@ -10,9 +10,9 @@
  * - [OK] Um juiz só pode assistir uma luta por vez;
  * - [OK] Cada luta só pode acontecer com na presença de um juiz;
  * - [OK] Mais de uma luta pode acontecer ao mesmo tempo;
- * - [fail] Torcedores buscam assistir lutadores;
- * - [fail] Há um limite de torcedores por luta classificatória;
- * - [fail] Caso um torcedor não consiga ingresso para assistir uma luta, espera na praça de alimentação;
+ * - [OK] Torcedores buscam assistir lutadores;
+ * - [OK] Há um limite de torcedores por luta classificatória;
+ * - [OK] Caso um torcedor não consiga ingresso para assistir uma luta, espera na praça de alimentação;
  * 
  * Garantias iniciais:
  * - Nenhuma
