@@ -244,6 +244,8 @@ void * juiz     (void * pid){
       // Insere ganhador no final da pilha
       TORNEIO[torneio_escrita_idx].id = ganhador;
       TORNEIO[torneio_escrita_idx].round += 1;
+      // Ganhador avança um round
+      INSCRITOS[ganhador].round = TORNEIO[torneio_escrita_idx].round;
       print("JUIZ %d: luta definida, ganhador %d\n",
                   id,                    ganhador);
       // Acorda juizes para conferir lutadores
