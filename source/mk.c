@@ -305,7 +305,7 @@ void * torcedor (void * pid){
 
   // Procura um lugar vazio
   for(idx = 0; idx < JUIZES; idx++){
-    if(sem_trywait(&RINGUES[idx])){
+    if(sem_trywait(&RINGUES[idx]) == 0){
       sentou = TRUE;
       break;
     }
