@@ -43,6 +43,10 @@
 #define RESET_COLOR "\033[0m"
 // Incrementa índice pilha
 #define INCREMENTA(idx) idx = (idx + 1) % LUTADORES;
+typedef struct {
+  int id;
+  int round;
+} fight;
 
 /* --------------------------------------------------------------------------------------------- */
 /* ========================================== THREADS ========================================== */
@@ -56,13 +60,15 @@ bool * INSCRITOS;
 // Número de inscritos que continuam no torneio
 int VIVOS;
 // Pilha Circular para percorrer o torneio por largura
-int * TORNEIO;
+fight * TORNEIO;
 int torneio_TAMANHO = 0;
 int torneio_leitura_idx = 0;
 int torneio_escrita_idx = 0;
 // LOCKS
 // Controlador da região crítica
 pthread_mutex_t mutex    = PTHREAD_MUTEX_INITIALIZER;
+// VARIÁVEIS CONDIÇÃO
+pthread_cond_t  juiz_cond = PTHREAD_COND_INITIALIZER;
 // SEMAPHORES
 // Controla os lutadores, aguardam o fim de suas lutas
 sem_t sem_vivos;
@@ -133,7 +139,7 @@ int main(int argc, char *argv[]){
   VIVOS = LUTADORES;
 
   // Inicializando arrays
-  TORNEIO   = (int  *) calloc(LUTADORES,sizeof(int));
+  TORNEIO  = (fight *) calloc(LUTADORES,sizeof(fight));
   INSCRITOS = (bool *) calloc(LUTADORES,sizeof(bool));
   LUTANDO  = (sem_t *) calloc(LUTADORES,sizeof(sem_t));
   
@@ -141,10 +147,13 @@ int main(int argc, char *argv[]){
   memset(INSCRITOS,TRUE,LUTADORES);
   
   // Inicializa torneio com lutadores
-  for (idx = 0; idx < LUTADORES; idx++)
-      TORNEIO[idx] = idx;
+  for (idx = 0; idx < LUTADORES; idx++){
+    TORNEIO[idx].id = idx;
+    TORNEIO[idx].round = 0;
+  }
+
   torneio_TAMANHO = LUTADORES;
-  
+
   // Inicializando semáforos
   for (idx = 0; idx < LUTADORES; idx++)
     sem_init(&LUTANDO[idx], 0, FALSE);
@@ -180,7 +189,7 @@ int main(int argc, char *argv[]){
 /* ========================================== FUNÇÕES ========================================== */
 /* --------------------------------------------------------------------------------------------- */
 void * juiz     (void * pid){
-  int esquerda, direita, ganhador, perdedor,
+  int round, esquerda, direita, ganhador, perdedor,
   id = *((int *) pid);
 
   while(TRUE){
@@ -189,17 +198,28 @@ void * juiz     (void * pid){
 
     pthread_mutex_lock(&mutex);
       // Se tem menos de 2, torneio acabou
-      if( torneio_TAMANHO < 2 )
+      if( VIVOS < 2 ){
+        sem_post(&sem_vivos);
         break;
-      // Pega os 2 primeiros da pilha TORNEIO
-      esquerda  = TORNEIO[torneio_leitura_idx];
+      }
+      // Pega o primeiro da pilha TORNEIO
+      esquerda = TORNEIO[torneio_leitura_idx].id;
+      round = TORNEIO[torneio_leitura_idx].round;
       INCREMENTA(torneio_leitura_idx);
 
-      direita = TORNEIO[torneio_leitura_idx];
+      // Pega o indice do segundo da pilha
+      // Nessa posição será escrito lutador
+      direita = torneio_leitura_idx;
       INCREMENTA(torneio_leitura_idx);
 
       torneio_TAMANHO -= 2;
       // Atualizando indices (SIZE, read)
+
+      // Enquanto os rounds forem diferentes, aguarda
+      while (TORNEIO[direita].round < round)
+        pthread_cond_wait(&juiz_cond,&mutex);
+
+      direita = TORNEIO[direita].id;
       print("JUIZ %d: convocando lutadores %d e %d\n",
                   id,             esquerda, direita);
     pthread_mutex_unlock(&mutex);
@@ -213,11 +233,15 @@ void * juiz     (void * pid){
       // Informa perdedor - Atualiza Inscritos
       perdedor = ganhador == direita? esquerda : direita;
       INSCRITOS[perdedor] = FALSE;
+      VIVOS -= 1;
       sem_post(&LUTANDO[perdedor]);
       // Insere ganhador no final da pilha
-      TORNEIO[torneio_escrita_idx] = ganhador;
+      TORNEIO[torneio_escrita_idx].id = ganhador;
+      TORNEIO[torneio_escrita_idx].round += 1;
       print("JUIZ %d: luta definida, ganhador %d\n",
                   id,                    ganhador);
+      // Acorda juizes para conferir lutadores
+      pthread_cond_broadcast(&juiz_cond);
       // Atualiza indices (SIZE, write)
       INCREMENTA(torneio_escrita_idx);
       torneio_TAMANHO++;
