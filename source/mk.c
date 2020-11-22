@@ -154,7 +154,7 @@ int main(int argc, char *argv[]){
   if (argc == 1){
     print("Imprimir Ajuda ? [s/N]\n");
     scanf("%c", &input_char);
-    if(input_char != 's' && input_char != 'S'){
+    if(input_char == 's' || input_char == 'S'){
       print_help();
       return 0;
     }
