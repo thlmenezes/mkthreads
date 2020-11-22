@@ -42,7 +42,7 @@
 #define print printf
 #define RESET_COLOR "\033[0m"
 // Incrementa índice pilha
-#define INCREMENTA(idx) idx = (idx + 1) % VIVOS;
+#define INCREMENTA(idx) idx = (idx + 1) % LUTADORES;
 
 /* --------------------------------------------------------------------------------------------- */
 /* ========================================== THREADS ========================================== */
