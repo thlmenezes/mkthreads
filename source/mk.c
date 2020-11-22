@@ -85,7 +85,7 @@ void print_man  (const char* nome, const char* description, int len, const char 
 /* ============================================ MAIN =========================================== */
 /* --------------------------------------------------------------------------------------------- */
 int main(int argc, char *argv[]){
-  int idx, LUTADORES = 2, JUIZES = 1, TORCEDORES = 1, EQUIPES = 2;
+  int idx;
   int * ptr_int;
   // char input_char;
   char * ptr_char;
