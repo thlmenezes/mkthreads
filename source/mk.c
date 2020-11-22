@@ -55,7 +55,7 @@ typedef struct {
 /* ================================== VARIAVEIS COMPARTILHADAS ================================= */
 /* --------------------------------------------------------------------------------------------- */
 // Número de atores padrão
-int LUTADORES = 2, JUIZES = 1, TORCEDORES = 1, EQUIPES = 2;
+int LUTADORES = 2, JUIZES = 1, TORCEDORES = 1, EQUIPES = 2, CADEIRAS = 20;
 // Array para controle do status dos inscritos
 status * INSCRITOS;
 // Número de inscritos que continuam no torneio
@@ -74,6 +74,7 @@ pthread_cond_t  juiz_cond = PTHREAD_COND_INITIALIZER;
 // Controla os lutadores, aguardam o fim de suas lutas
 sem_t sem_vivos;
 sem_t * LUTANDO;
+
 
 /* --------------------------------------------------------------------------------------------- */
 /* =========================================== HEADER ========================================== */
@@ -114,6 +115,9 @@ int main(int argc, char *argv[]){
 
     else if(prefix("e=",ptr_char))
       ptr_int = &EQUIPES;
+
+    else if(prefix("c=",ptr_char))
+      ptr_int = &CADEIRAS;
 
     else if(strcmp("--help",ptr_char) == 0 || strcmp("-H",ptr_char) == 0){
       print_help();
