@@ -371,16 +371,16 @@ bool prefix(const char *pre, const char *str){
 void print_help() {
   const char * options[] = {"-H, --help",
   "Imprime essa mensagem de ajuda",
-  "--lutadores=LUTADORES",
+  "-L LUTADORES, --lutadores=LUTADORES",
   "Número de participantes inscritos",
-  "--juizes=JUÍZES",
+  "-J JUÍZES, --juizes=JUÍZES",
   "Número de juízes ou ringues",
-  "--torcedores=TORCEDORES",
+  "-T TORCEDORES, --torcedores=TORCEDORES",
   "Número de torcedores",
-  "--cadeiras=CADEIRAS",
+  "-C CADEIRAS, --cadeiras=CADEIRAS",
   "Número de cadeiras do estádio"};
   const char * description = "\n\
-  \t\033[1;32mTorneio de Artes Marciais Mistas e Mágicas\033[0m\n\
+  \t\033[1;32mTorneio de Artes Marciais Mistas, Mágicas e Tecnológicas\033[0m\n\
   \t\t\t\033[1;32mMortal Kombat\033[0m\n\
   \t* Regras:\n\
   \t* - Cada ringue tem um juiz;\n\
