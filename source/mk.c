@@ -179,7 +179,7 @@ int main(int argc, char *argv[]){
 /* ========================================== FUNÇÕES ========================================== */
 /* --------------------------------------------------------------------------------------------- */
 void * juiz     (void * pid){
-  int esquerda, direita, ganhador,
+  int esquerda, direita, ganhador, perdedor,
   id = *((int *) pid);
 
   while(TRUE){
@@ -210,7 +210,9 @@ void * juiz     (void * pid){
     
     pthread_mutex_lock(&mutex);
       // Informa perdedor - Atualiza Inscritos
-      INSCRITOS[ganhador == direita? esquerda : direita] = FALSE;
+      perdedor = ganhador == direita? esquerda : direita;
+      INSCRITOS[perdedor] = FALSE;
+      sem_post(&LUTANDO[perdedor]);
       // Insere ganhador no final da pilha
       TORNEIO[torneio_escrita_idx] = ganhador;
       print("JUIZ %d: luta definida, ganhador %d\n",
