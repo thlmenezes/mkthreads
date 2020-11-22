@@ -98,7 +98,7 @@ void print_man  (const char* nome, const char* description, int len, const char 
 int main(int argc, char *argv[]){
   int idx;
   int * ptr_int;
-  // char input_char;
+  char input_char;
   char * ptr_char;
   
   // Tratando os argumentos CLI
@@ -131,7 +131,6 @@ int main(int argc, char *argv[]){
   }
 
   // Tratamento do caso de nenhum argumento CLI
-  /*
   if (argc == 1){
     print("Imprimir Ajuda ? [S/n]\n");
     scanf("%c", &input_char);
@@ -141,7 +140,6 @@ int main(int argc, char *argv[]){
     }
     print("Loading defaults\n");
   }
-  // */
 
   // O número de vivos no começo é o número de lutadores
   VIVOS = LUTADORES;
