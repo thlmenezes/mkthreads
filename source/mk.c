@@ -81,6 +81,7 @@ sem_t * LUTANDO;
 // Atores
 void * juiz     (void * pid);
 void * lutador  (void * pid);
+void * torcedor (void * pid);
 // Ações
 // std++
 bool prefix     (const char *pre, const char *str);
@@ -280,6 +281,18 @@ void * lutador  (void * pid){
   // TODO: MORREU? VIRA TORCEDOR
   pthread_exit(0);
 }
+
+void * torcedor (void * pid){
+  int id = *((int *) pid);
+
+  while(TRUE){
+    // Tenta assistir luta
+    // Cada torcedor assiste as lutas de um ringue
+  }
+  // Sem vaga? Praça de alimentação e Saída
+  pthread_exit(0);
+}
+
 /* Source: https://stackoverflow.com/questions/4770985/how-to-check-if-a-string-starts-with-another-string-in-c#answer-4770992 */
 bool prefix(const char *pre, const char *str){
   return strncmp(pre, str, strlen(pre)) == 0;
