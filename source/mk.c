@@ -337,7 +337,9 @@ void print_help() {
   "--juizes=JUÍZES",
   "Número de juízes ou ringues",
   "--torcedores=TORCEDORES",
-  "Número de torcedores"};
+  "Número de torcedores",
+  "--cadeiras=CADEIRAS",
+  "Número de cadeiras do estádio"};
   const char * description = "\n\
   \t\033[1;32mTorneio de Artes Marciais Mistas e Mágicas\033[0m\n\
   \t\t\t\033[1;32mMortal Kombat\033[0m\n\
@@ -355,7 +357,7 @@ void print_help() {
   \t    estádio, vai para a praça de alimentação\n\
   \t    e volta para casa;\n\
   ";
-  print_man("./mk",description,10,options);
+  print_man("./mk",description,12,options);
 }
 
 void print_man(const char* nome, const char* description, int len, const char ** options){
