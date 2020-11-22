@@ -106,16 +106,16 @@ int main(int argc, char *argv[]){
   for(idx = 1; idx < argc; idx++, ptr_int=NULL){
     ptr_char = argv[idx];
 
-    if(prefix("l=",ptr_char))
+    if(prefix("--lutadores=",ptr_char))
       ptr_int = &LUTADORES;
 
-    else if(prefix("j=",ptr_char))
+    else if(prefix("--juizes=",ptr_char))
       ptr_int = &JUIZES;
 
-    else if(prefix("t=",ptr_char))
+    else if(prefix("--torcedores=",ptr_char))
       ptr_int = &TORCEDORES;
 
-    else if(prefix("c=",ptr_char))
+    else if(prefix("--cadeiras=",ptr_char))
       ptr_int = &CADEIRAS;
 
     else if(strcmp("--help",ptr_char) == 0 || strcmp("-H",ptr_char) == 0){
