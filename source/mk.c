@@ -149,17 +149,6 @@ int main(int argc, char *argv[]){
   INSCRITOS = (status *) calloc(LUTADORES,sizeof(status));
   LUTANDO   =  (sem_t *) calloc(LUTADORES,sizeof(sem_t));
 
-  for (idx = 0; idx < LUTADORES; idx++){
-  // Inicializa o array com vida=true,round=0
-    INSCRITOS[idx].vida  = TRUE;
-    INSCRITOS[idx].round = 0;
-  // Inicializa torneio com lutadores
-    TORNEIO[idx].id = idx;
-    TORNEIO[idx].round = 0;
-  // Inicializando semáforos
-    sem_init(&LUTANDO[idx], 0, FALSE);
-  }
-
   torneio_TAMANHO = LUTADORES;
   sem_init(&sem_vivos, 0, FALSE);
 
@@ -175,13 +164,21 @@ int main(int argc, char *argv[]){
       }
   }
 
-  // Criação das threads de lutadores
   pthread_t tlid[LUTADORES];
 
   for (idx = 0; idx < LUTADORES; idx++) {
-      ptr_int = (int *) malloc(sizeof(int));
-      *ptr_int = idx;
-      pthread_create(&tlid[idx], NULL, lutador, (void*) (ptr_int));
+  // Inicializa o array com vida=true,round=0
+    INSCRITOS[idx].vida  = TRUE;
+    INSCRITOS[idx].round = 0;
+  // Inicializa torneio com lutadores
+    TORNEIO[idx].id = idx;
+    TORNEIO[idx].round = 0;
+  // Inicializando semáforos
+    sem_init(&LUTANDO[idx], 0, FALSE);
+  // Criação das threads de lutadores
+    ptr_int = (int *) malloc(sizeof(int));
+    *ptr_int = idx;
+    pthread_create(&tlid[idx], NULL, lutador, (void*) (ptr_int));
   }
 
   sem_wait(&sem_vivos);
