@@ -176,7 +176,10 @@ int main(int argc, char *argv[]){
   // Criação das threads de lutadores
     ptr_int = (int *) malloc(sizeof(int));
     *ptr_int = idx;
-    pthread_create(&tlid[idx], NULL, lutador, (void*) (ptr_int));
+    if(pthread_create(&tlid[idx], NULL, lutador, (void*) (ptr_int))) {
+        print("erro na criacao do thread %d\n", idx);
+        exit(1);
+    }
   }
 
   pthread_t ttid[TORCEDORES];
@@ -187,7 +190,10 @@ int main(int argc, char *argv[]){
   // Criação das threads de torcedores
     ptr_int = (int *) malloc(sizeof(int));
     *ptr_int = idx;
-    pthread_create(&ttid[idx], NULL, torcedor, (void*) (ptr_int));
+    if(pthread_create(&ttid[idx], NULL, torcedor, (void*) (ptr_int))) {
+      print("erro na criacao do thread %d\n", idx);
+      exit(1);
+    }
   }
 
   sem_wait(&sem_vivos);
