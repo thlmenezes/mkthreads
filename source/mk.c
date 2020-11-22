@@ -47,6 +47,10 @@ typedef struct {
   int id;
   int round;
 } fight;
+typedef struct {
+  bool vida;
+  int round;
+} status;
 
 /* --------------------------------------------------------------------------------------------- */
 /* ========================================== THREADS ========================================== */
@@ -56,7 +60,7 @@ typedef struct {
 // Número de atores padrão
 int LUTADORES = 2, JUIZES = 1, TORCEDORES = 1, EQUIPES = 2;
 // Array para controle do status dos inscritos
-bool * INSCRITOS;
+status * INSCRITOS;
 // Número de inscritos que continuam no torneio
 int VIVOS;
 // Pilha Circular para percorrer o torneio por largura
@@ -139,13 +143,15 @@ int main(int argc, char *argv[]){
   VIVOS = LUTADORES;
 
   // Inicializando arrays
-  TORNEIO  = (fight *) calloc(LUTADORES,sizeof(fight));
-  INSCRITOS = (bool *) calloc(LUTADORES,sizeof(bool));
-  LUTANDO  = (sem_t *) calloc(LUTADORES,sizeof(sem_t));
+  TORNEIO   =  (fight *) calloc(LUTADORES,sizeof(fight));
+  INSCRITOS = (status *) calloc(LUTADORES,sizeof(status));
+  LUTANDO   =  (sem_t *) calloc(LUTADORES,sizeof(sem_t));
   
-  // Inicializa o array com true
-  memset(INSCRITOS,TRUE,LUTADORES);
-  
+  // Inicializa o array com vida=true,round=0
+  for (idx = 0; idx < LUTADORES; idx++){
+    INSCRITOS[idx].vida  = TRUE;
+    INSCRITOS[idx].round = 0;
+  }
   // Inicializa torneio com lutadores
   for (idx = 0; idx < LUTADORES; idx++){
     TORNEIO[idx].id = idx;
@@ -232,7 +238,7 @@ void * juiz     (void * pid){
     pthread_mutex_lock(&mutex);
       // Informa perdedor - Atualiza Inscritos
       perdedor = ganhador == direita? esquerda : direita;
-      INSCRITOS[perdedor] = FALSE;
+      INSCRITOS[perdedor].vida = FALSE;
       VIVOS -= 1;
       sem_post(&LUTANDO[perdedor]);
       // Insere ganhador no final da pilha
@@ -258,7 +264,7 @@ void * lutador  (void * pid){
     // Aguarda o resultado da luta
     sem_wait(&LUTANDO[id]);
     // Se meu inscrito.status for FALSO -> morri
-    if(!INSCRITOS[id]){
+    if(!INSCRITOS[id].vida){
       print("Lutador %d morreu\n", id);
       break;
     }
