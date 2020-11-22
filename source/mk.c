@@ -236,13 +236,7 @@ void * lutador  (void * pid){
     sem_wait(&LUTANDO[id]);
     // Se meu inscrito.status for FALSO -> morri
     if(!INSCRITOS[id]){
-      pthread_mutex_lock(&mutex);
-        VIVOS -= 1;
-        if( VIVOS == 0 )
-          sem_post(&sem_vivos);
-        else
-          print("Lutador %d morreu", id);
-      pthread_mutex_unlock(&mutex);
+      print("Lutador %d morreu\n", id);
       break;
     }
   }
