@@ -55,7 +55,7 @@ typedef struct {
 /* ================================== VARIAVEIS COMPARTILHADAS ================================= */
 /* --------------------------------------------------------------------------------------------- */
 // Número de atores padrão
-int LUTADORES = 4, JUIZES = 2, TORCEDORES = 3, EQUIPES = 2, CADEIRAS = 20;
+int LUTADORES = 4, JUIZES = 2, TORCEDORES = 3, CADEIRAS = 20;
 // Array para controle do status dos inscritos
 status * INSCRITOS;
 // Número de inscritos que continuam no torneio
@@ -114,9 +114,6 @@ int main(int argc, char *argv[]){
 
     else if(prefix("t=",ptr_char))
       ptr_int = &TORCEDORES;
-
-    else if(prefix("e=",ptr_char))
-      ptr_int = &EQUIPES;
 
     else if(prefix("c=",ptr_char))
       ptr_int = &CADEIRAS;
@@ -340,9 +337,7 @@ void print_help() {
 "--juizes=JUÍZES",
 "Número de juízes ou ringues",
 "--torcedores=TORCEDORES",
-"Número de torcedores",
-"--equipes=EQUIPES",
-"Número de equipes competindo (lutadores serão dividos em equipes,\n\t\tmas o número de participantes por equipe pode variar)"};
+"Número de torcedores"};
   const char * description = "\n\
 \t\033[1;32mTorneio de Artes Marciais Mistas\033[0m\n\
 \t* Regras:\n\
