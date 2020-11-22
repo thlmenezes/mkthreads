@@ -70,6 +70,7 @@ int torneio_escrita_idx = 0;
 pthread_mutex_t mutex    = PTHREAD_MUTEX_INITIALIZER;
 // VARIÁVEIS CONDIÇÃO
 pthread_cond_t  juiz_cond = PTHREAD_COND_INITIALIZER;
+pthread_cond_t  torce_cond = PTHREAD_COND_INITIALIZER;
 // SEMAPHORES
 // Controla os lutadores, aguardam o fim de suas lutas
 sem_t sem_vivos;
@@ -271,6 +272,8 @@ void * juiz     (void * pid){
                   id,                    ganhador);
       // Acorda juizes para conferir lutadores
       pthread_cond_broadcast(&juiz_cond);
+      // Acorda torcedores para gritar
+      pthread_cond_broadcast(&torce_cond);
       // Atualiza indices (SIZE, write)
       INCREMENTA(torneio_escrita_idx);
       torneio_TAMANHO++;
@@ -297,14 +300,33 @@ void * lutador  (void * pid){
 }
 
 void * torcedor (void * pid){
-  int id = *((int *) pid);
+  bool sentou = FALSE;
+  int idx, estado, id = *((int *) pid);
 
-  while(TRUE){
-    // Tenta assistir luta
-    // Cada torcedor assiste as lutas de um ringue
+  // Procura um lugar vazio
+  for(idx = 0; idx < JUIZES; idx++){
+    if(sem_trywait(&RINGUES[idx])){
+      sentou = TRUE;
+      break;
+    }
   }
   // Sem vaga? Praça de alimentação e Saída
-  pthread_exit(0);
+  if(!sentou){
+    print("TORCEDOR %d: Praça de alimentação", id);
+    sleep(5);
+    pthread_exit(0);
+  }
+
+  while(TRUE){
+    // Cada torcedor assiste as lutas de um ringue
+    // E vibra a cada vitória
+    pthread_mutex_lock(&mutex);
+      estado = VIVOS;
+      while( VIVOS == estado )
+        pthread_cond_wait(&torce_cond,&mutex);
+      print("%d OLÉ", id);
+    pthread_mutex_unlock(&mutex);
+  }
 }
 
 /* Source: https://stackoverflow.com/questions/4770985/how-to-check-if-a-string-starts-with-another-string-in-c#answer-4770992 */
