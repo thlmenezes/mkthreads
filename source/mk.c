@@ -340,16 +340,20 @@ void print_help() {
 "Número de torcedores"};
   const char * description = "\n\
 \t\033[1;32mTorneio de Artes Marciais Mistas e Mágicas\033[0m\n\
-\t\033[1;32mMortal Kombat\033[0m\n\
+\t\t\t\033[1;32mMortal Kombat\033[0m\n\
 \t* Regras:\n\
 \t* - Cada ringue tem um juiz;\n\
 \t* - O juiz irá convocar lutadores para lutar;\n\
 \t* - Um juiz só pode julgar uma luta por vez;\n\
-\t* - Dois lutadores, na presença de um juiz, irão duelar durante o tempo que o juiz achar necessário;\n\
-\t* - Mais de uma luta poderá ocorrer ao mesmo tempo;\n\
+\t* - Dois lutadores, na presença de um juiz,\n\
+\t    irão duelar durante o tempo que o juiz\n\
+\t    achar necessário;\n\
+\t* - Várias lutas podem ocorrer ao mesmo tempo;\n\
 \t* - Torcedores buscam assistir lutadores;\n\
 \t* - Há um limite de torcedores no estádio;\n\
-\t* - Caso um torcedor não consiga lugar no estádio, vai para a praça de alimentação e volta para casa;\n\
+\t* - Caso um torcedor não consiga lugar no\n\
+\t    estádio, vai para a praça de alimentação\n\
+\t    e volta para casa;\n\
 ";
   print_man("./mk",description,10,options);
 }
