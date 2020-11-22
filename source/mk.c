@@ -150,18 +150,6 @@ int main(int argc, char *argv[]){
   torneio_TAMANHO = LUTADORES;
   sem_init(&sem_vivos, 0, FALSE);
 
-  // Criação das threads de juízes
-  pthread_t tjid[JUIZES];
-
-  for (idx = 0; idx < JUIZES; idx++) {
-      ptr_int = (int *) malloc(sizeof(int));
-      *ptr_int = idx;
-      if(pthread_create(&tjid[idx], NULL, juiz, (void*) (ptr_int))){
-        print("erro na criacao do thread %d\n", idx);
-        exit(1);
-      }
-  }
-
   pthread_t tlid[LUTADORES];
 
   for (idx = 0; idx < LUTADORES; idx++) {
@@ -191,6 +179,18 @@ int main(int argc, char *argv[]){
     ptr_int = (int *) malloc(sizeof(int));
     *ptr_int = idx;
     if(pthread_create(&ttid[idx], NULL, torcedor, (void*) (ptr_int))) {
+      print("erro na criacao do thread %d\n", idx);
+      exit(1);
+    }
+  }
+
+  // Criação das threads de juízes
+  pthread_t tjid[JUIZES];
+
+  for (idx = 0; idx < JUIZES; idx++) {
+    ptr_int = (int *) malloc(sizeof(int));
+    *ptr_int = idx;
+    if(pthread_create(&tjid[idx], NULL, juiz, (void*) (ptr_int))){
       print("erro na criacao do thread %d\n", idx);
       exit(1);
     }
