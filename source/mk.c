@@ -74,6 +74,7 @@ pthread_cond_t  juiz_cond = PTHREAD_COND_INITIALIZER;
 // Controla os lutadores, aguardam o fim de suas lutas
 sem_t sem_vivos;
 sem_t * LUTANDO;
+sem_t * RINGUES;
 
 
 /* --------------------------------------------------------------------------------------------- */
@@ -148,6 +149,7 @@ int main(int argc, char *argv[]){
   TORNEIO   =  (fight *) calloc(LUTADORES,sizeof(fight));
   INSCRITOS = (status *) calloc(LUTADORES,sizeof(status));
   LUTANDO   =  (sem_t *) calloc(LUTADORES,sizeof(sem_t));
+  RINGUES   =  (sem_t *) calloc(JUIZES,sizeof(sem_t));
 
   torneio_TAMANHO = LUTADORES;
   sem_init(&sem_vivos, 0, FALSE);
@@ -179,6 +181,17 @@ int main(int argc, char *argv[]){
     ptr_int = (int *) malloc(sizeof(int));
     *ptr_int = idx;
     pthread_create(&tlid[idx], NULL, lutador, (void*) (ptr_int));
+  }
+
+  pthread_t ttid[TORCEDORES];
+
+  for (idx = 0; idx < TORCEDORES; idx++) {
+  // Inicializando semáforos
+    sem_init(&RINGUES[idx], 0, CADEIRAS);
+  // Criação das threads de torcedores
+    ptr_int = (int *) malloc(sizeof(int));
+    *ptr_int = idx;
+    pthread_create(&ttid[idx], NULL, torcedor, (void*) (ptr_int));
   }
 
   sem_wait(&sem_vivos);
