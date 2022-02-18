@@ -1,6 +1,6 @@
 # mkthreads
 
-Simular um torneio de luta, trabalho de conclusão da disciplina de Programação Concorrente entregue em 18 NOV 2020
+Simular um torneio de luta, trabalho de conclusão da disciplina de Programação Concorrente entregue em 18 NOV 2020 na forma de [Artigo](./Relatorio_MKThreads.pdf)
 
 ## Comportamento desejado
 - [x] Cada ringue tem um juiz;
